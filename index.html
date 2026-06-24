@@ -1,0 +1,523 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.app{display:flex;min-height:640px}
+.sidebar{width:210px;min-width:210px;background:#0C447C;display:flex;flex-direction:column}
+.sidebar-logo{padding:16px;border-bottom:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:10px}
+.logo-icon{width:30px;height:30px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon i{color:#fff;font-size:15px}
+.logo-text{font-size:13px;font-weight:500;color:#fff;line-height:1.3}
+.nav-section{padding:10px 8px;flex:1}
+.nav-label{font-size:10px;color:rgba(255,255,255,0.45);padding:10px 8px 4px;letter-spacing:0.07em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.65);transition:background 0.15s,color 0.15s}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.15);color:#fff;font-weight:500}
+.nav-item i{font-size:16px}
+.sidebar-user{padding:12px;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:9px}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;flex-shrink:0}
+.user-name{font-size:11px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10px;color:rgba(255,255,255,0.5)}
+
+.main{flex:1;display:flex;flex-direction:column;background:#F0F4F8;overflow:auto}
+.topbar{padding:13px 20px;border-bottom:1px solid #dde3ea;display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:10}
+.topbar-title{font-size:15px;font-weight:500}
+.topbar-actions{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-size:13px;cursor:pointer;border:1px solid #dde3ea;background:#fff;color:var(--color-text-primary);transition:background 0.1s}
+.btn:hover{background:#f3f6fa}
+.btn-primary{background:#0C447C;color:#fff;border-color:#0C447C}
+.btn-primary:hover{background:#042C53;border-color:#042C53}
+.btn-danger{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1}
+.btn-danger:hover{background:#F7C1C1}
+.btn i{font-size:14px}
+.content{padding:20px;flex:1}
+.page{display:none}
+.page.active{display:block}
+
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{border-radius:10px;padding:14px 16px}
+.metric-card.blue{background:#E6F1FB}
+.metric-card.green{background:#EAF3DE}
+.metric-card.amber{background:#FAEEDA}
+.metric-card.red{background:#FCEBEB}
+.metric-label{font-size:12px;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.metric-card.blue .metric-label{color:#185FA5}
+.metric-card.green .metric-label{color:#3B6D11}
+.metric-card.amber .metric-label{color:#854F0B}
+.metric-card.red .metric-label{color:#A32D2D}
+.metric-value{font-size:26px;font-weight:500}
+.metric-card.blue .metric-value{color:#0C447C}
+.metric-card.green .metric-value{color:#27500A}
+.metric-card.amber .metric-value{color:#633806}
+.metric-card.red .metric-value{color:#791F1F}
+.metric-sub{font-size:11px;margin-top:2px;opacity:0.7}
+.metric-card.blue .metric-sub{color:#185FA5}
+.metric-card.green .metric-sub{color:#3B6D11}
+.metric-card.amber .metric-sub{color:#854F0B}
+.metric-card.red .metric-sub{color:#A32D2D}
+
+.card{background:#fff;border:1px solid #dde3ea;border-radius:12px;padding:16px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{font-size:14px;font-weight:500}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+
+.search-filter{display:flex;gap:8px;margin-bottom:14px}
+.search-wrap{position:relative;flex:1}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:#888}
+.search-wrap input{width:100%;padding:7px 10px 7px 32px;border-radius:8px;border:1px solid #dde3ea;background:#fff;font-size:13px;color:var(--color-text-primary);outline:none}
+.search-wrap input:focus{border-color:#0C447C}
+select.fsel{padding:7px 10px;border-radius:8px;border:1px solid #dde3ea;background:#fff;font-size:13px;color:var(--color-text-primary);cursor:pointer;outline:none}
+
+.table-wrap{background:#fff;border:1px solid #dde3ea;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+thead th{padding:10px 14px;text-align:left;font-weight:500;font-size:12px;color:#6b7a90;border-bottom:1px solid #dde3ea;background:#f7f9fc}
+tbody tr{border-bottom:1px solid #f0f4f8;transition:background 0.1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f7f9fc}
+tbody td{padding:10px 14px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-active{background:#EAF3DE;color:#27500A}
+.badge-maintenance{background:#FAEEDA;color:#633806}
+.badge-inactive{background:#F1EFE8;color:#5F5E5A}
+.badge-repair{background:#FCEBEB;color:#791F1F}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+.asset-icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;margin-right:6px;vertical-align:middle}
+
+.bar-label{display:flex;justify-content:space-between;font-size:12px;color:#6b7a90;margin-bottom:4px}
+.bar-track{background:#f0f4f8;border-radius:4px;height:8px;margin-bottom:10px}
+.bar-fill{height:8px;border-radius:4px}
+
+.empty-state{text-align:center;padding:40px 20px;color:#888;font-size:13px}
+.empty-state i{font-size:32px;margin-bottom:8px;display:block;color:#bbb}
+
+.loc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.loc-card{background:#fff;border:1px solid #dde3ea;border-radius:12px;padding:16px;position:relative}
+.loc-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.loc-icon{width:36px;height:36px;border-radius:8px;background:#E6F1FB;display:flex;align-items:center;justify-content:center}
+.loc-icon i{color:#0C447C;font-size:18px}
+.loc-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:16px;padding:2px;transition:color 0.1s}
+.loc-del:hover{color:#A32D2D}
+.loc-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.loc-count{font-size:12px;color:#6b7a90}
+.loc-add-card{background:#f7f9fc;border:1.5px dashed #dde3ea;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px;cursor:pointer;transition:background 0.1s,border-color 0.1s;gap:6px;color:#6b7a90;font-size:13px}
+.loc-add-card:hover{background:#eef2f7;border-color:#0C447C;color:#0C447C}
+.loc-add-card i{font-size:22px}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,30,60,0.4);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;border:1px solid #dde3ea;width:440px;max-width:95vw;max-height:88vh;overflow:auto}
+.modal-header{padding:16px 20px;border-bottom:1px solid #eef0f4;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:15px;font-weight:500}
+.modal-close{background:none;border:none;cursor:pointer;color:#888;font-size:18px;display:flex;align-items:center}
+.modal-body{padding:20px}
+.form-row{margin-bottom:14px}
+.form-label{font-size:12px;color:#6b7a90;margin-bottom:5px;display:block}
+.form-input{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #dde3ea;background:#fff;font-size:13px;color:var(--color-text-primary);outline:none}
+.form-input:focus{border-color:#0C447C}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.modal-footer{padding:14px 20px;border-top:1px solid #eef0f4;display:flex;justify-content:flex-end;gap:8px}
+
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#0C447C;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;transform:translateY(60px);opacity:0;transition:all 0.25s;pointer-events:auto}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{background:#A32D2D}
+
+.settings-section{background:#fff;border:1px solid #dde3ea;border-radius:12px;padding:16px;margin-bottom:14px;max-width:440px}
+.settings-title{font-size:14px;font-weight:500;margin-bottom:14px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f4f8}
+.detail-row:last-child{border-bottom:none}
+.detail-key{font-size:13px;color:#6b7a90}
+</style>
+
+<h2 class="sr-only">SMPN63 Asset — IT asset management dashboard for school staff</h2>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon"><i class="ti ti-cpu" aria-hidden="true"></i></div>
+      <span class="logo-text">SMPN63 Asset</span>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+      <div class="nav-item" onclick="showPage('assets',this)"><i class="ti ti-devices" aria-hidden="true"></i>All assets</div>
+      <div class="nav-item" onclick="showPage('locations',this)"><i class="ti ti-map-pin" aria-hidden="true"></i>Locations</div>
+      <div class="nav-item" onclick="showPage('reports',this)"><i class="ti ti-chart-bar" aria-hidden="true"></i>Reports</div>
+      <div class="nav-label">Manage</div>
+      <div class="nav-item" onclick="showPage('maintenance',this)"><i class="ti ti-tool" aria-hidden="true"></i>Maintenance</div>
+      <div class="nav-item" onclick="showPage('settings',this)"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar">MH</div>
+      <div>
+        <div class="user-name">M. Hadyan Al Khairi Fatkhar</div>
+        <div class="user-role">IT Admin</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="page-title">Dashboard</span>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="openAddAssetModal()"><i class="ti ti-plus" aria-hidden="true"></i>Add asset</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div class="page active" id="page-dashboard">
+        <div class="metrics-row">
+          <div class="metric-card blue"><div class="metric-label"><i class="ti ti-devices" aria-hidden="true"></i>Total assets</div><div class="metric-value" id="m-total">0</div><div class="metric-sub">all items</div></div>
+          <div class="metric-card green"><div class="metric-label"><i class="ti ti-circle-check" aria-hidden="true"></i>Active</div><div class="metric-value" id="m-active">0</div><div class="metric-sub">in use</div></div>
+          <div class="metric-card amber"><div class="metric-label"><i class="ti ti-tool" aria-hidden="true"></i>Maintenance</div><div class="metric-value" id="m-maint">0</div><div class="metric-sub">scheduled</div></div>
+          <div class="metric-card red"><div class="metric-label"><i class="ti ti-alert-circle" aria-hidden="true"></i>Needs repair</div><div class="metric-value" id="m-repair">0</div><div class="metric-sub">attention needed</div></div>
+        </div>
+        <div class="summary-grid">
+          <div class="card"><div class="section-title" style="margin-bottom:14px">Assets by type</div><div id="type-bars"></div></div>
+          <div class="card"><div class="section-title" style="margin-bottom:14px">Assets by location</div><div id="loc-bars"></div></div>
+        </div>
+        <div class="section-header"><span class="section-title">Recent assets</span><button class="btn" onclick="showPage('assets',document.querySelectorAll('.nav-item')[1])"><i class="ti ti-arrow-right" aria-hidden="true"></i>View all</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th style="width:32%">Asset</th><th style="width:16%">Type</th><th style="width:20%">Assigned to</th><th style="width:18%">Location</th><th style="width:14%">Status</th></tr></thead>
+          <tbody id="recent-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <div class="page" id="page-assets">
+        <div class="search-filter">
+          <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" placeholder="Search name, tag, or user..." id="search-input" oninput="renderAssets()"></div>
+          <select class="fsel" id="filter-status" onchange="renderAssets()"><option value="">All statuses</option><option>Active</option><option>Maintenance</option><option>Inactive</option><option>Repair</option></select>
+          <select class="fsel" id="filter-type" onchange="renderAssets()"><option value="">All types</option><option>Laptop</option><option>Desktop</option><option>Monitor</option><option>Phone</option><option>Tablet</option><option>Printer</option><option>Other</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th style="width:7%">Tag</th><th style="width:24%">Asset name</th><th style="width:13%">Type</th><th style="width:16%">Assigned to</th><th style="width:16%">Location</th><th style="width:12%">Status</th><th style="width:12%">Actions</th></tr></thead>
+          <tbody id="assets-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <div class="page" id="page-locations">
+        <div class="loc-grid" id="loc-grid"></div>
+      </div>
+
+      <div class="page" id="page-reports">
+        <div class="card">
+          <div class="section-title" style="margin-bottom:16px">Status breakdown</div>
+          <div id="report-bars"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-maintenance">
+        <div class="section-title" style="margin-bottom:12px">Assets needing attention</div>
+        <div class="table-wrap">
+          <table><thead><tr><th style="width:30%">Asset</th><th style="width:18%">Type</th><th style="width:20%">Location</th><th style="width:16%">Status</th><th style="width:16%">Action</th></tr></thead>
+          <tbody id="maint-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <div class="page" id="page-settings">
+        <div class="settings-section">
+          <div class="settings-title">Organisation</div>
+          <div class="form-row"><label class="form-label">School name</label><input class="form-input" value="SMPN 63"></div>
+          <div class="form-row"><label class="form-label">Admin name</label><input class="form-input" value="M. Hadyan Al Khairi Fatkhar"></div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Notifications</div>
+          <div class="detail-row"><span class="detail-key">Email alerts for repairs</span><span class="badge badge-active">On</span></div>
+          <div class="detail-row"><span class="detail-key">Monthly report digest</span><span class="badge badge-active">On</span></div>
+          <div class="detail-row"><span class="detail-key">Maintenance reminders</span><span class="badge badge-maintenance">Pending</span></div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-title">Manage locations</div>
+          <div id="settings-loc-list"></div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <input class="form-input" id="new-loc-input" placeholder="New location name..." style="flex:1">
+            <button class="btn btn-primary" onclick="addLocFromSettings()"><i class="ti ti-plus" aria-hidden="true"></i>Add</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="asset-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="asset-modal-title">Add asset</span>
+      <button class="modal-close" onclick="closeAssetModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-idx">
+      <div class="form-row"><label class="form-label">Asset name</label><input class="form-input" id="f-name" placeholder='e.g. MacBook Pro 14"'></div>
+      <div class="form-row-2">
+        <div><label class="form-label">Tag / serial</label><input class="form-input" id="f-tag" placeholder="IT-001"></div>
+        <div><label class="form-label">Type</label><select class="form-input" id="f-type"><option>Laptop</option><option>Desktop</option><option>Monitor</option><option>Phone</option><option>Tablet</option><option>Printer</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Assigned to</label><input class="form-input" id="f-user" placeholder="Name or team"></div>
+        <div><label class="form-label">Location</label><select class="form-input" id="f-loc"></select></div>
+      </div>
+      <div class="form-row-2">
+        <div><label class="form-label">Status</label><select class="form-input" id="f-status"><option>Active</option><option>Maintenance</option><option>Inactive</option><option>Repair</option></select></div>
+        <div><label class="form-label">Purchase year</label><input class="form-input" id="f-year" type="number" placeholder="2024"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeAssetModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAsset()"><i class="ti ti-check" aria-hidden="true"></i>Save asset</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="loc-modal">
+  <div class="modal" style="width:360px">
+    <div class="modal-header">
+      <span class="modal-title">Add location</span>
+      <button class="modal-close" onclick="document.getElementById('loc-modal').classList.remove('open')"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">Location name</label><input class="form-input" id="new-loc-name" placeholder="e.g. Computer Lab 3"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="document.getElementById('loc-modal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveLocation()"><i class="ti ti-check" aria-hidden="true"></i>Add location</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="width:340px">
+    <div class="modal-header"><span class="modal-title" id="confirm-title">Confirm delete</span><button class="modal-close" onclick="closeConfirm()"><i class="ti ti-x" aria-hidden="true"></i></button></div>
+    <div class="modal-body"><p id="confirm-msg" style="font-size:13px;color:#6b7a90;line-height:1.6"></p></div>
+    <div class="modal-footer"><button class="btn" onclick="closeConfirm()">Cancel</button><button class="btn btn-danger" id="confirm-ok">Delete</button></div>
+  </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i><span id="toast-msg"></span></div></div>
+
+<script>
+const typeIcon={Laptop:'ti-laptop',Desktop:'ti-device-desktop',Monitor:'ti-device-tv',Phone:'ti-device-mobile',Tablet:'ti-device-tablet',Printer:'ti-printer',Other:'ti-package'};
+const typeBg={Laptop:'#E6F1FB',Desktop:'#EAF3DE',Monitor:'#EEEDFE',Phone:'#FAEEDA',Tablet:'#E1F5EE',Printer:'#FBEAF0',Other:'#F1EFE8'};
+const typeClr={Laptop:'#0C447C',Desktop:'#27500A',Monitor:'#3C3489',Phone:'#633806',Tablet:'#085041',Printer:'#72243E',Other:'#5F5E5A'};
+const barClrs=['#185FA5','#3B6D11','#534AB7','#854F0B','#0F6E56','#993556'];
+
+let locations=[];
+let assets=[];
+let nextId=1;
+let confirmCb=null;
+
+function statusBadge(s){
+  const c=s==='Active'?'badge-active':s==='Maintenance'?'badge-maintenance':s==='Repair'?'badge-repair':'badge-inactive';
+  return `<span class="badge ${c}"><span class="badge-dot"></span>${s}</span>`;
+}
+function assetIconEl(type){
+  return `<div class="asset-icon" style="background:${typeBg[type]||'#F1EFE8'}"><i class="ti ${typeIcon[type]||'ti-package'}" style="color:${typeClr[type]||'#5F5E5A'};font-size:14px" aria-hidden="true"></i></div>`;
+}
+
+function renderDashboard(){
+  const total=assets.length,active=assets.filter(a=>a.status==='Active').length,maint=assets.filter(a=>a.status==='Maintenance').length,repair=assets.filter(a=>a.status==='Repair').length;
+  document.getElementById('m-total').textContent=total;
+  document.getElementById('m-active').textContent=active;
+  document.getElementById('m-maint').textContent=maint;
+  document.getElementById('m-repair').textContent=repair;
+
+  const typeCounts={};
+  assets.forEach(a=>{typeCounts[a.type]=(typeCounts[a.type]||0)+1});
+  const maxT=Math.max(1,...Object.values(typeCounts));
+  document.getElementById('type-bars').innerHTML=Object.entries(typeCounts).sort((a,b)=>b[1]-a[1]).map(([t,c],i)=>`
+    <div class="bar-label"><span>${t}</span><span>${c}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxT*100)}%;background:${typeClr[t]||barClrs[i%barClrs.length]}"></div></div>`).join('')||'<div style="font-size:13px;color:#aaa;text-align:center;padding:16px">No assets yet</div>';
+
+  const locCounts={};
+  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+1});
+  const maxL=Math.max(1,...Object.values(locCounts));
+  document.getElementById('loc-bars').innerHTML=Object.entries(locCounts).sort((a,b)=>b[1]-a[1]).map(([l,c])=>`
+    <div class="bar-label"><span>${l}</span><span>${c}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxL*100)}%;background:#185FA5"></div></div>`).join('')||'<div style="font-size:13px;color:#aaa;text-align:center;padding:16px">No assets yet</div>';
+
+  const recent=[...assets].slice(-5).reverse();
+  document.getElementById('recent-tbody').innerHTML=recent.map(a=>`<tr onclick="openEditAssetModal(${a.id})" style="cursor:pointer">
+    <td>${assetIconEl(a.type)}<span style="vertical-align:middle">${a.name}</span></td>
+    <td>${a.type}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>No assets yet. Add your first one!</td></tr>';
+}
+
+function renderAssets(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const fs=document.getElementById('filter-status').value;
+  const ft=document.getElementById('filter-type').value;
+  const filtered=assets.filter(a=>{
+    if(fs&&a.status!==fs)return false;
+    if(ft&&a.type!==ft)return false;
+    if(q&&!a.name.toLowerCase().includes(q)&&!a.tag.toLowerCase().includes(q)&&!a.user.toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('assets-tbody').innerHTML=filtered.map(a=>`<tr>
+    <td style="font-size:11px;color:#999;font-family:var(--font-mono)">${a.tag}</td>
+    <td>${assetIconEl(a.type)}<span style="vertical-align:middle">${a.name}</span></td>
+    <td>${a.type}</td><td>${a.user}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
+    <td><button class="btn" style="padding:4px 8px;font-size:12px;margin-right:4px" onclick="openEditAssetModal(${a.id})"><i class="ti ti-edit" aria-hidden="true"></i></button>
+    <button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="confirmDeleteAsset(${a.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></td></tr>`).join('')||'<tr><td colspan="7" class="empty-state"><i class="ti ti-inbox" aria-hidden="true"></i>No assets match your filters.</td></tr>';
+}
+
+function renderLocations(){
+  const locCounts={};
+  assets.forEach(a=>{locCounts[a.loc]=(locCounts[a.loc]||0)+1});
+  const cards=locations.map(loc=>`
+    <div class="loc-card">
+      <div class="loc-card-top">
+        <div class="loc-icon"><i class="ti ti-map-pin" aria-hidden="true"></i></div>
+        <button class="loc-del" onclick="confirmDeleteLoc('${loc.replace(/'/g,"\\\'")}')" aria-label="Delete location"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+      <div class="loc-name">${loc}</div>
+      <div class="loc-count">${locCounts[loc]||0} asset${(locCounts[loc]||0)!==1?'s':''}</div>
+    </div>`).join('');
+  document.getElementById('loc-grid').innerHTML=cards+`
+    <div class="loc-add-card" onclick="document.getElementById('loc-modal').classList.add('open');document.getElementById('new-loc-name').value=''">
+      <i class="ti ti-plus" aria-hidden="true"></i>Add location
+    </div>`;
+  renderSettingsLoc();
+}
+
+function renderSettingsLoc(){
+  const el=document.getElementById('settings-loc-list');
+  if(!el)return;
+  el.innerHTML=locations.map(loc=>`
+    <div class="detail-row">
+      <span class="detail-key"><i class="ti ti-map-pin" style="font-size:13px;vertical-align:-1px;margin-right:5px;color:#0C447C" aria-hidden="true"></i>${loc}</span>
+      <button class="btn btn-danger" style="padding:3px 8px;font-size:12px" onclick="confirmDeleteLoc('${loc.replace(/'/g,"\\\'")}')" ><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </div>`).join('')||'<div style="font-size:13px;color:#aaa;padding:8px 0">No locations added yet.</div>';
+}
+
+function renderMaintenance(){
+  const list=assets.filter(a=>a.status==='Maintenance'||a.status==='Repair');
+  document.getElementById('maint-tbody').innerHTML=list.map(a=>`<tr>
+    <td>${assetIconEl(a.type)}<span style="vertical-align:middle">${a.name}</span></td>
+    <td>${a.type}</td><td>${a.loc}</td><td>${statusBadge(a.status)}</td>
+    <td><button class="btn" style="font-size:12px;padding:5px 10px" onclick="resolveAsset(${a.id})"><i class="ti ti-check" aria-hidden="true"></i>Resolve</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty-state"><i class="ti ti-circle-check" aria-hidden="true"></i>All clear — no issues.</td></tr>';
+}
+
+function renderReports(){
+  const statuses=[{k:'Active',cl:'#27500A',bg:'#EAF3DE'},{k:'Maintenance',cl:'#633806',bg:'#FAEEDA'},{k:'Repair',cl:'#791F1F',bg:'#FCEBEB'},{k:'Inactive',cl:'#5F5E5A',bg:'#F1EFE8'}];
+  const maxS=Math.max(1,...statuses.map(s=>assets.filter(a=>a.status===s.k).length));
+  document.getElementById('report-bars').innerHTML=statuses.map(s=>{
+    const c=assets.filter(a=>a.status===s.k).length;
+    return `<div class="bar-label"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:${s.bg};border:2px solid ${s.cl};display:inline-block"></span>${s.k}</span><span style="font-weight:500">${c}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/maxS*100)}%;background:${s.cl}"></div></div>`;
+  }).join('');
+}
+
+function refreshAll(){renderDashboard();renderAssets();renderLocations();renderMaintenance();renderReports();}
+
+function populateLocSelect(){
+  const sel=document.getElementById('f-loc');
+  const cur=sel.value;
+  sel.innerHTML=locations.map(l=>`<option value="${l}">${l}</option>`).join('');
+  if(locations.includes(cur))sel.value=cur;
+}
+
+function openAddAssetModal(){
+  if(locations.length===0){showToast('Add a location first!','err');showPage('locations',document.querySelectorAll('.nav-item')[2]);return;}
+  document.getElementById('edit-idx').value='';
+  document.getElementById('asset-modal-title').textContent='Add asset';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-tag').value='IT-'+String(nextId).padStart(3,'0');
+  document.getElementById('f-type').value='Laptop';
+  document.getElementById('f-user').value='';
+  document.getElementById('f-status').value='Active';
+  document.getElementById('f-year').value=2024;
+  populateLocSelect();
+  document.getElementById('asset-modal').classList.add('open');
+}
+
+function openEditAssetModal(id){
+  const a=assets.find(x=>x.id===id);if(!a)return;
+  document.getElementById('edit-idx').value=id;
+  document.getElementById('asset-modal-title').textContent='Edit asset';
+  document.getElementById('f-name').value=a.name;
+  document.getElementById('f-tag').value=a.tag;
+  document.getElementById('f-type').value=a.type;
+  document.getElementById('f-user').value=a.user;
+  document.getElementById('f-status').value=a.status;
+  document.getElementById('f-year').value=a.year||'';
+  populateLocSelect();
+  document.getElementById('f-loc').value=a.loc;
+  document.getElementById('asset-modal').classList.add('open');
+}
+
+function closeAssetModal(){document.getElementById('asset-modal').classList.remove('open');}
+
+function saveAsset(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){document.getElementById('f-name').focus();return;}
+  const editId=parseInt(document.getElementById('edit-idx').value);
+  const obj={name,tag:document.getElementById('f-tag').value.trim()||'IT-'+String(nextId).padStart(3,'0'),type:document.getElementById('f-type').value,user:document.getElementById('f-user').value.trim()||'Unassigned',loc:document.getElementById('f-loc').value,status:document.getElementById('f-status').value,year:parseInt(document.getElementById('f-year').value)||2024};
+  if(editId){const i=assets.findIndex(a=>a.id===editId);if(i>=0){assets[i]={...assets[i],...obj};}}
+  else{assets.push({id:nextId++,...obj});}
+  closeAssetModal();refreshAll();showToast(editId?'Asset updated':'Asset added');
+}
+
+function confirmDeleteAsset(id){
+  const a=assets.find(x=>x.id===id);if(!a)return;
+  document.getElementById('confirm-title').textContent='Delete asset';
+  document.getElementById('confirm-msg').textContent=`Are you sure you want to delete "${a.name}"? This cannot be undone.`;
+  confirmCb=()=>{assets=assets.filter(x=>x.id!==id);refreshAll();showToast('Asset deleted');};
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function saveLocation(){
+  const name=document.getElementById('new-loc-name').value.trim();
+  if(!name)return;
+  if(locations.includes(name)){showToast('Location already exists','err');return;}
+  locations.push(name);
+  document.getElementById('loc-modal').classList.remove('open');
+  refreshAll();showToast('Location added');
+}
+
+function addLocFromSettings(){
+  const name=document.getElementById('new-loc-input').value.trim();
+  if(!name)return;
+  if(locations.includes(name)){showToast('Location already exists','err');return;}
+  locations.push(name);
+  document.getElementById('new-loc-input').value='';
+  refreshAll();showToast('Location added');
+}
+
+function confirmDeleteLoc(loc){
+  const count=assets.filter(a=>a.loc===loc).length;
+  document.getElementById('confirm-title').textContent='Delete location';
+  document.getElementById('confirm-msg').textContent=`Delete "${loc}"?${count>0?` This location has ${count} asset(s) assigned — they will become unassigned.`:''}`;
+  confirmCb=()=>{
+    locations=locations.filter(l=>l!==loc);
+    assets=assets.map(a=>a.loc===loc?{...a,loc:'(no location)'}:a);
+    refreshAll();showToast('Location deleted');
+  };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');confirmCb=null;}
+document.getElementById('confirm-ok').onclick=()=>{closeConfirm();if(confirmCb)confirmCb();};
+
+function resolveAsset(id){const a=assets.find(x=>x.id===id);if(a){a.status='Active';refreshAll();showToast(a.name+' marked as Active');}}
+
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={dashboard:'Dashboard',assets:'All assets',locations:'Locations',reports:'Reports',maintenance:'Maintenance',settings:'Settings'};
+  document.getElementById('page-title').textContent=titles[name]||name;
+}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.className='toast'+(type==='err'?' err':'');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+refreshAll();
+</script>
